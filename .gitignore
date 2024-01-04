@@ -1,0 +1,6 @@
+**/*.zip
+**/__pycache__
+**/.ok_history
+**/.ok_storage.dat
+**/.ok_storage.bak
+**/.ok_storage.dir
