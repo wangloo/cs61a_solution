@@ -1,5 +1,7 @@
 """Typing test implementation"""
 
+from pytz import country_timezones
+from sympy import li
 from utils import lower, split, remove_punctuation, lines_from_file
 from ucb import main, interact, trace
 from datetime import datetime
@@ -31,6 +33,8 @@ def pick(paragraphs, select, k):
     """
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    newparag = list(filter(select, paragraphs))
+    return newparag[k] if k < len(newparag) else ''
     # END PROBLEM 1
 
 
@@ -50,6 +54,13 @@ def about(subject):
     assert all([lower(x) == x for x in subject]), 'subjects should be lowercase.'
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    def helper(s):
+      s = lower(remove_punctuation(s))
+      for w in split(s):
+        if w in subject:
+          return True
+      return False
+    return helper
     # END PROBLEM 2
 
 
@@ -80,6 +91,18 @@ def accuracy(typed, source):
     source_words = split(source)
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if typed_words == [] and source_words == []:
+      return 100.0
+    if typed_words == [] or source_words == []:
+      return 0.0
+
+    base = len(typed_words)
+    count = 0
+    for i in range(0, base):
+      if i < len(source_words)  and source_words[i] == typed_words[i]:
+        count += 1
+    return count / base * 100
+        
     # END PROBLEM 3
 
 
@@ -98,6 +121,7 @@ def wpm(typed, elapsed):
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    return len(typed) * 60 / 5 / elapsed
     # END PROBLEM 4
 
 
@@ -127,6 +151,18 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if typed_word in word_list:
+      return typed_word
+
+    min_diff, min_diff_word = limit+1, typed_word
+    for w in word_list:
+      if diff_function(typed_word, w, limit) < min_diff:
+        min_diff = diff_function(typed_word, w, limit)
+        min_diff_word = w
+
+    return min_diff_word if min_diff <= limit else typed_word
+
+      
     # END PROBLEM 5
 
 
@@ -153,7 +189,13 @@ def feline_fixes(typed, source, limit):
     5
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    if typed == source or limit < 0:
+        return 0
+    if typed == '' or source == '': # if not typed or not source
+        return len(typed) + len(source)
+    if typed[0] != source[0]:
+        return 1 + feline_fixes(typed[1:], source[1:], limit - 1)
+    return feline_fixes(typed[1:], source[1:], limit)
     # END PROBLEM 6
 
 
@@ -177,22 +219,28 @@ def minimum_mewtations(typed, source, limit):
     >>> minimum_mewtations("ckiteus", "kittens", big_limit) # ckiteus -> kiteus -> kitteus -> kittens
     3
     """
-    assert False, 'Remove this line'
-    if ___________: # Base cases should go here, you may add more base cases as needed.
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+    if typed == source or limit < 0: # Base cases should go here, you may add more base cases as needed.
+      # BEGIN
+      "*** YOUR CODE HERE ***"
+      return 0
+      # END
+    if typed == '' or source == '':
+      return len(typed) + len(source)
+      
+    
     # Recursive cases should go below here
-    if ___________: # Feel free to remove or add additional cases
+    if typed[0] == source[0]: # Feel free to remove or add additional cases
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return minimum_mewtations(typed[1:], source[1:], limit)
         # END
     else:
-        add = ... # Fill in these lines
-        remove = ...
-        substitute = ...
+        add = 1+minimum_mewtations(typed, source[1:], limit-1)
+        remove = 1+minimum_mewtations(typed[1:], source, limit-1)
+        substitute = 1+minimum_mewtations(typed[1:], source[1:], limit-1)
         # BEGIN
         "*** YOUR CODE HERE ***"
+        return min(add, remove, substitute)
         # END
 
 
