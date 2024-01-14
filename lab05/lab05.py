@@ -16,6 +16,14 @@ def berry_finder(t):
     True
     """
     "*** YOUR CODE HERE ***"
+    if not t:
+      return False
+    if label(t) == 'berry':
+      return True
+    for subt in branches(t):
+      if berry_finder(subt):
+        return True
+    return False
 
 
 def replace_loki_at_leaf(t, lokis_replacement):
@@ -48,6 +56,14 @@ def replace_loki_at_leaf(t, lokis_replacement):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t) and label(t) == 'loki':
+      return tree(lokis_replacement, branches(t))
+
+    branch = []
+    for subt in branches(t):
+      branch.append(replace_loki_at_leaf(subt, lokis_replacement))
+    return tree(label(t), branch)
+    
 
 
 
@@ -147,6 +163,7 @@ def distance(city_a, city_b):
     5.0
     """
     "*** YOUR CODE HERE ***"
+    return sqrt((get_lat(city_a)-get_lat(city_b))**2 + (get_lon(city_b)-get_lon(city_a))**2)
 
 def closer_city(lat, lon, city_a, city_b):
     """
@@ -163,6 +180,12 @@ def closer_city(lat, lon, city_a, city_b):
     >>> closer_city(41.29, 174.78, bucharest, vienna)
     'Bucharest'
     """
+    disa = distance(city_a, make_city('Temp', lat, lon))
+    disb = distance(city_b, make_city('Temp', lat, lon))
+    if disa <= disb:
+      return get_name(city_a)
+    else:
+      return get_name(city_b)
     "*** YOUR CODE HERE ***"
 
 def check_city_abstraction():
@@ -250,6 +273,21 @@ def dejavu(t, n):
     False
     """
     "*** YOUR CODE HERE ***"
+    def helper(cur, subt):
+      if is_leaf(subt):
+        if cur+label(subt) == n:
+          return True
+        else:
+          return False
+      if cur > n:
+        return False
+      for st in branches(subt):
+        if helper(cur+label(subt), st):
+          return True
+      return False
+    return helper(0, t)
+      
+      
 
 
 def hailstone_tree(n, h):
