@@ -1,3 +1,6 @@
+from audioop import mul
+
+
 def duplicate_link(link, val):
     """Mutates `link` such that if there is a linked list
     node that has a first equal to value, that node will
@@ -18,6 +21,15 @@ def duplicate_link(link, val):
     Link(1, Link(2, Link(2, Link(2, Link(2, Link(3))))))
     """
     "*** YOUR CODE HERE ***"
+    p = link
+    while not p is Link.empty :
+      if p.first == val:
+        node = Link(val)
+        node.rest = p.rest
+        p.rest = node
+        p = node.rest
+      else:
+        p = p.rest
 
 
 def convert_link(link):
@@ -30,6 +42,9 @@ def convert_link(link):
     []
     """
     "*** YOUR CODE HERE ***"
+    if link == Link.empty:
+      return []
+    return [link.first] + convert_link(link.rest)
 
 
 def multiply_lnks(lst_of_lnks):
@@ -48,12 +63,12 @@ def multiply_lnks(lst_of_lnks):
     Link(48, Link(12, Link(0)))
     """
     product = 1
-    for _________ in ________________:
-        if __________________________________________:
-            _________________________________
-        ___________________
-    lst_of_lnks_rests = [_________ for _________ in ________________]
-    return _________________________________________________
+    for link in lst_of_lnks:
+        if link == Link.empty:
+            return Link.empty
+        product *= link.first
+    lst_of_lnks_rests = [lnk.rest for lnk in lst_of_lnks]
+    return Link(product, multiply_lnks(lst_of_lnks_rests))
 
 
 class Link:
