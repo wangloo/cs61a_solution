@@ -23,6 +23,9 @@ class Card:
         500
         """
         "*** YOUR CODE HERE ***"
+        self.name = name
+        self.attack = attack
+        self.defense = defense
 
     def power(self, opponent_card):
         """
@@ -41,6 +44,7 @@ class Card:
         -100
         """
         "*** YOUR CODE HERE ***"
+        return self.attack - opponent_card.defense
 
 
     def effect(self, opponent_card, player, opponent):
@@ -79,6 +83,7 @@ class Player:
         self.deck = deck
         self.name = name
         "*** YOUR CODE HERE ***"
+        self.hand = [deck.draw() for _ in range(5)]
 
     def draw(self):
         """Draw a card from the player's deck and add it to their hand.
@@ -93,6 +98,7 @@ class Player:
         """
         assert not self.deck.is_empty(), 'Deck is empty!'
         "*** YOUR CODE HERE ***"
+        self.hand.append(self.deck.draw())
 
     def play(self, index):
         """Remove and return a card from the player's hand at the given INDEX.
@@ -109,6 +115,7 @@ class Player:
         2
         """
         "*** YOUR CODE HERE ***"
+        return self.hand.pop(index)
 
 
     def display_hand(self):
@@ -154,7 +161,9 @@ class AICard(Card):
         True
         """
         "*** YOUR CODE HERE ***"
-        implemented = False
+        implemented = True
+        for _ in range(2):
+          player.hand.append(player.deck.draw())
         # You should add your implementation above this.
         if implemented:
             print(f"{self.name} allows me to draw two cards!")
