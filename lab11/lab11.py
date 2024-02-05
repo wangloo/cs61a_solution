@@ -1,5 +1,7 @@
 ############## You do not need to understand any of this code!
+from ast import arg
 import base64
+from xmlrpc.client import Boolean
 ob = "CmRlZiBhZGRpdGlvbihleHByKToKICAgIGRpdmlkZW5kID0gZXhwci5maXJzdAogICAgZXhwciA9IGV4cHIucmVzdAogICAgd2hpbGUgZXhwciAhPSBuaWw6CiAgICAgICAgZGl2aXNvciA9IGV4cHIuZmlyc3QKICAgICAgICBkaXZpZGVuZCArPSBkaXZpc29yCiAgICAgICAgZXhwciA9IGV4cHIucmVzdAogICAgcmV0dXJuIGRpdmlkZW5kCgpkZWYgc3VidHJhY3Rpb24oZXhwcik6CiAgICBkaXZpZGVuZCA9IGV4cHIuZmlyc3QKICAgIGV4cHIgPSBleHByLnJlc3QKICAgIHdoaWxlIGV4cHIgIT0gbmlsOgogICAgICAgIGRpdmlzb3IgPSBleHByLmZpcnN0CiAgICAgICAgZGl2aWRlbmQgLT0gZGl2aXNvcgogICAgICAgIGV4cHIgPSBleHByLnJlc3QKICAgIHJldHVybiBkaXZpZGVuZAoKZGVmIG11bHRpcGxpY2F0aW9uKGV4cHIpOgogICAgZGl2aWRlbmQgPSBleHByLmZpcnN0CiAgICBleHByID0gZXhwci5yZXN0CiAgICB3aGlsZSBleHByICE9IG5pbDoKICAgICAgICBkaXZpc29yID0gZXhwci5maXJzdAogICAgICAgIGRpdmlkZW5kICo9IGRpdmlzb3IKICAgICAgICBleHByID0gZXhwci5yZXN0CiAgICByZXR1cm4gZGl2aWRlbmQKCmRlZiBkaXZpc2lvbihleHByKToKICAgIGRpdmlkZW5kID0gZXhwci5maXJzdAogICAgZXhwciA9IGV4cHIucmVzdAogICAgd2hpbGUgZXhwciAhPSBuaWw6CiAgICAgICAgZGl2aXNvciA9IGV4cHIuZmlyc3QKICAgICAgICBkaXZpZGVuZCAvPSBkaXZpc29yCiAgICAgICAgZXhwciA9IGV4cHIucmVzdAogICAgcmV0dXJuIGRpdmlkZW5kCg=="
 exec(base64.b64decode(ob.encode("ascii")).decode("ascii"))
 ##############
@@ -14,20 +16,22 @@ def calc_eval(exp):
     3
     """
     if isinstance(exp, Pair):
-        operator = ____________ # UPDATE THIS FOR Q2
-        operands = ____________ # UPDATE THIS FOR Q2
+        operator = exp.first # UPDATE THIS FOR Q2
+        operands = exp.rest # UPDATE THIS FOR Q2
+        if operator in bindings:
+          operator = bindings[operator]
         if operator == 'and': # and expressions
             return eval_and(operands)
         elif operator == 'define': # define expressions
             return eval_define(operands)
         else: # Call expressions
-            return calc_apply(___________, ___________) # UPDATE THIS FOR Q2
+            return calc_apply(OPERATORS[operator], operands) # UPDATE THIS FOR Q2
     elif exp in OPERATORS:   # Looking up procedures
         return OPERATORS[exp]
     elif isinstance(exp, int) or isinstance(exp, bool):   # Numbers and booleans
         return exp
-    elif _________________: # CHANGE THIS CONDITION FOR Q4
-        return _________________ # UPDATE THIS FOR Q4
+    elif exp in bindings: # CHANGE THIS CONDITION FOR Q4
+        return calc_eval(bindings[exp]) # UPDATE THIS FOR Q4
 
 def calc_apply(op, args):
     return op(args)
@@ -52,6 +56,16 @@ def floor_div(args):
     20
     """
     # BEGIN SOLUTION Q2
+    if not isinstance(args, Pair):
+      return args
+    val = args.first
+    p = args.rest
+
+    while p != nil:
+      val = val // calc_eval(p.first)
+      p = p.rest
+    return val
+
 
 scheme_t = True   # Scheme's #t
 scheme_f = False  # Scheme's #f
@@ -74,6 +88,21 @@ def eval_and(expressions):
     True
     """
     # BEGIN SOLUTION Q3
+    p = expressions
+    val = scheme_t
+    if expressions == nil:
+      return scheme_t
+
+    if not isinstance(expressions, Pair):
+      return expressions
+
+    while p != nil:
+      if type(p.first) == Boolean and p.first == scheme_f:
+        return scheme_f
+      val = calc_eval(p.first)
+      p = p.rest
+    return val
+      
 
 bindings = {}
 
@@ -93,6 +122,11 @@ def eval_define(expressions):
     2
     """
     # BEGIN SOLUTION Q4
+    name = expressions.first
+    val = expressions.rest.first
+    bindings[name] = val
+    return name
+      
 
 OPERATORS = { "//": floor_div, "+": addition, "-": subtraction, "*": multiplication, "/": division }
 
